@@ -70,7 +70,7 @@
 \begin{document}
 	\maketitle
 	\begin{abstract}
-	The aim of this project was to render a realistic scene using the skills developed in the Computer Graphics Module at Edinburgh Napier University using OpenGL and C++. The scene produced in this project is a solar system, inspired by my adoration for the stars and the Star Wars movies{add reference later}. The report will cover the different techniques used in the project, including transformation hierarchy, shadowing, lighting, texturing and material shading. These techniques are widely used in a variety of games.
+	The aim of this project was to render a realistic scene using the skills developed in the Computer Graphics Module at Edinburgh Napier University using OpenGL and C++. The scene produced in this project is a solar system, inspired by my adoration for the stars and the Star Wars movies {add reference later}. Advanced 3D effects and techniques are used to accomplish the generated result, such as lighting,shadowing and texturing. These techniques are widely used in a variety of games.
 	\end{abstract}
     
 	\textbf{Keywords -- }{Shadowing, Lighting, Multi-Texturing, Skybox, Multiple Cameras, Material Shading}
@@ -78,6 +78,10 @@
 	\section{Introduction}
     \paragraph{Referencing}
     You should cite References like this: \cite{Keshav}. The references are saved in an external .bib file, and will automatically be added ot the bibliography at the end once cited.
+    
+    The key effects being used are lighting, texturing, shadowing, skybox, material shading and transformation hierarchy. Various rendering techniques are required to produce a realistic depiction of the scene. The different lights being used in the scene are a spot light and a point light in the middle of the sun. Transformation techniques are also being applied to the different meshes of the scene, and each of the objects render have their own textures.Furthermore, in order to create the stars image around the solar system a skybox effect is being used. In order to make the earth more realistic, normal mapping is being implemented on the project.
+    
+    Diffuse light is being applied to the scene, adding some depth perception to the objects, as well as specular light which adds shininess of materials to objects and changes depending on the camera position. The transformation and translating of the meshes in the scene is the scaling and the positioning of the objects. Texturing combined with the lighting is applied to give the objects a more realistic aesthetic.  A more advanced technique being used is normal mapping, which uses the texture and a normal mapped version of the texture, which helps determines the direction the pixels are facing, giving an ectra feeling of depth to the object.
     
     \figuremacro{h}{placeholder}{ImageTitle}{ - Some Descriptive Text}{1.0}
 	
