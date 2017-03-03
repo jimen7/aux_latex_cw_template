@@ -169,12 +169,10 @@ print a newline\;
 		\item Texturing
 		\item Normal Mapping
 		\item Shadow Mapping
-		\item Multiple Cameras
-		\item Material Shading
 		\item Transform Hierarchy
 		\item Skybox
-		
 	\end{itemize}
+	Apart from these visual elements, multiple cameras and the rotation of the planets around the sun were also implemented.
 \newpage
 \subsection{Texturing}
 
@@ -202,13 +200,31 @@ print a newline\;
 	
 \subsection{Lighting}
 
+	\figuremacro{H}{Moon}{Moon}{ - Emissive light example}{1.0}
+
+	\paragraph{General Lighting} Lighting involves three pieces of physical transformation, which are light emitters, materials and sensors. 
+	
+	Light sources emit light. A simplistic model of light is considered to have three components:
+		\begin{itemize}
+			\item \textbf{Ambient Light}: light that shines everywhere at an equal measure
+			\item \textbf{Diffuse Light}: light that has a direction and reacts with an object's surface in a different  way depending on the direction of the light
+			\item \textbf{Specular Light}: specular highlights
+		\end{itemize}
+	In this scene, we are not using ambient light, but diffuse and specular, which are calculated in the fragment shaders.
+	
+	
+	Materials describe the surfaces of objects. In our scene, the material description in the shader has three values: emissive colour, diffuse reflection colour, specular reflection colour and shininess. The diffuse reflection colour illustrates how the diffuse and the ambient light interacts with the object, the specular reflection colour describes how the specular light interacts with the object, the shininess describes how shiny the objects looks and the emissive colour is the light that emits from the object. Most of these objects in the scene have those values being set throughout the main cpp file. An example of a material with a relatively high emissive light compared to the other objects is the moon(See figure \textbf{\ref{fig:Moon}}), since most of the planets in this project have their emissive colour set to 0.
+	
+	Finally, in order for an object to be visible, the light that is interacting with the object has to partially be absorbed by a light sensor. The more light it absorbs, the less visible it is.
+	
+	
 	\figuremacro{H}{Sun}{Point Light}{ - Main Light Source for the project}{1.0}
 	
-	\paragraph{Point Light} In the scene being created, we have one main light source, which is a point light, and it is located in the middle of the sun. In order to let the light go out, the normals of the sun mesh had to be reversed. I did that by creating a different sun effect which has identical shaders apart from the vertex shader. In that vertex shader, when the transformed normal is calculated, it is timed by -1, so the normals are reversed and the light can shine throughout the scene.
+	\paragraph{Point Light}  Point lights are light sources which have a position and an area which they light. In the scene being created, we have one main light source, which is a point light, and it is located in the middle of the sun. In order to let the light go out from inside the sphere, the normals of the sun mesh had to be reversed. I did that by creating a different sun effect which has identical shaders with the normal effect, apart from the vertex shader. In that vertex shader, when the transformed normal is calculated, it is timed by -1, so the normals are reversed and the light can shine throughout the scene.
 	
 	\figuremacro{H}{Spotlight_Shadow}{Spot Light Example}{ - This is the spotlight that is bound to the shadow map}{1.0}
 	
-	\paragraph{Spot Lights} Aside from the point lights, we have sever
+	\paragraph{Spot Lights} Aside from the point light, we have several other spotlights. Spotlights are very similar to point lights, but in this case the lights are facing towards a specific direction. In this coursework, 9 different spotlights are being created. Eight of those spotlights are rotating along along with the planets, with a position over the planets and a direction towards them. The ninth spotlight is under the sun, facing towards the plane and is bound to the shadow map(See figure \textbf{\ref{fig:Spotlight_Shadow}}). Nine different spotlights are being created by using a vector container, which holds the spotlights and their key values. In order for the spotlights to shine, each spotlight should be initialized before rendering. The spotlights in the project can be turned on and off at any time.
 	
 
 
