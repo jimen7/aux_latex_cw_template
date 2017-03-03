@@ -67,26 +67,40 @@
 \date{}
 \hypersetup{pdfauthor=\myauthor,pdftitle=\mytitle,pdfkeywords=\mykeywords}
 \sloppy
+
+
+
 \begin{document}
+	
+		\hyphenchar\font=-1    
+	
 	\maketitle
 	\begin{abstract}
-	The aim of this project was to render a realistic scene using the skills developed in the Computer Graphics Module at Edinburgh Napier University using OpenGL and C++. The scene produced in this project is a solar system, inspired by my adoration for the stars and the Star Wars movies {add reference later}. Advanced 3D effects and techniques are used to accomplish the generated result, such as lighting,shadowing and texturing. These techniques are widely used in a variety of games.
+	The aim of this project was to render a realistic scene using the skills developed in the Computer Graphics Module at Edinburgh Napier University using OpenGL and C++. The scene produced in this project is a solar system, inspired by my adoration for the stars and the Star Wars movies \cite{StarWars}. Advanced 3D effects and techniques are used to accomplish the generated result, such as lighting,shadowing and texturing. These techniques are widely used in a variety of games.
+	\figuremacro{h}{MillenniumFalcon}{Millenium Falcon}{ - Chase Camera Inspiration}{1.0}
 	\end{abstract}
     
 	\textbf{Keywords -- }{Shadowing, Lighting, Multi-Texturing, Skybox, Multiple Cameras, Material Shading}
     %START FROM HERE
 	\section{Introduction}
     \paragraph{Referencing}
-    You should cite References like this: \cite{Keshav}. The references are saved in an external .bib file, and will automatically be added ot the bibliography at the end once cited.
-    
+
     The key effects being used are lighting, texturing, shadowing, skybox, material shading and transformation hierarchy. Various rendering techniques are required to produce a realistic depiction of the scene. The different lights being used in the scene are a spot light and a point light in the middle of the sun. Transformation techniques are also being applied to the different meshes of the scene, and each of the objects render have their own textures.Furthermore, in order to create the stars image around the solar system a skybox effect is being used. In order to make the earth more realistic, normal mapping is being implemented on the project.
     
-    Diffuse light is being applied to the scene, adding some depth perception to the objects, as well as specular light which adds shininess of materials to objects and changes depending on the camera position. The transformation and translating of the meshes in the scene is the scaling and the positioning of the objects. Texturing combined with the lighting is applied to give the objects a more realistic aesthetic.  A more advanced technique being used is normal mapping, which uses the texture and a normal mapped version of the texture, which helps determines the direction the pixels are facing, giving an ectra feeling of depth to the object.
+    Diffuse light is being applied to the scene, adding some depth perception to the objects, as well as specular light which adds shininess of materials to objects and changes depending on the camera position. The transformation and translating of the meshes in the scene is the scaling and the positioning of the objects. Texturing combined with the lighting is applied to give the objects a more realistic aesthetic.  A more advanced technique being used is normal mapping, which uses the texture and a normal mapped version of the texture, which helps determines the direction the pixels are facing, giving an extra feeling of depth to the object.
     
-    \figuremacro{h}{placeholder}{ImageTitle}{ - Some Descriptive Text}{1.0}
+    
 	
-	\section{Formatting}
+	\section{Related Work}
+	\iffalse
+	\paragraph{Formatting}
 	Some common formatting you may need uses these commands for \textbf{Bold Text}, \textit{Italics}, and \underline{underlined}.
+	\fi
+	
+	The implementations required for this project have been based on the Computer Graphics workbook, while some of the skills attained had to be further developed. For example, I learned how to apply textures from the workbook, but I also learned how to apply multiple textures and normal mapping by creating texture arrays and binding them to the corresponding meshes in the render boolean by looking up information on-line and experimenting with OpenGl.
+	
+	\iffalse
+	
 	\subsection{LineBreaks}
 	Here is a line
     
@@ -142,8 +156,75 @@ print a newline\;
 }
 \caption{FizzBuzz}
 \end{algorithm}
+
+	\fi
 	
-\section{Conclusion}	
+	
+
+	
+	
+\section{Implementation}
+	A variety of visual elements were involved in the creation of the scene. These elements are:
+	\begin{itemize}
+		\item Texturing
+		\item Normal Mapping
+		\item Shadow Mapping
+		\item Multiple Cameras
+		\item Material Shading
+		\item Transform Hierarchy
+		\item Skybox
+		
+	\end{itemize}
+\newpage
+\subsection{Texturing}
+
+	\figuremacro{H}{Jupiter}{Jupiter Texture}{ - Texture Example}{1.0}
+
+	In this project I have created a mesh array and a texture array. In order to apply a texture to a specific mesh, the same name is given to the mesh and the texture in their corresponding arrays. So during the render method, I have created a for loop to render each mesh, and each time a mesh is rendered by going through the for loop, the texture is bound to the mesh by checking for a texture with the exact same name. During the for loop, the key element of the mesh array is the same in the texture array, and therefore, the texture is bound. An example of a texture can bee seen in figure \textbf{\ref{fig:Jupiter}}.
+
+
+\subsection{Normal Mapping}
+		
+	\figuremacro{H}{Earth}{Normal Mapped Earth}{ }{1.0}
+	
+	Normal mapping is a method used for making fake bumps and dents in the object, basically to make it more realistic. This is achieved by calculating the normals on a per pixel basis instead of per vertex basis. A normal map is basically a texture  where the x, y and z axis of the normals are represented by red, green and blue values respectively. In order for normal mapping to be used, we need to work within the tangent coordinate space, which is based on the normal at a particular point of the object. So when normal mapping is used, the normal, the binormal and the tangent become the axes in our coordinate space. To do this, we simply create a transformation matrix:
+	
+	    \[
+	    TBN=
+	    \begin{bmatrix}
+	    T_x & B_x & N_x  \\
+	    T_y & B_y & N_y  \\
+	    T_x & B_x & N_z
+	    \end{bmatrix}
+	    \]
+	    
+	where T is the tangent, B is the binormal and N is the normal. These are transformed by the normal matrix in order to get the actual surface values. In our normal mapping shader, we use the TBN matrix to transform the sampled normal. In this project, normal mapping is only applied to the earth (See figure \textbf{\ref{fig:Earth}}).
+	
+\subsection{Lighting}
+
+	\figuremacro{H}{Sun}{Point Light}{ - Main Light Source for the project}{1.0}
+	
+	\paragraph{Point Light} In the scene being created, we have one main light source, which is a point light, and it is located in the middle of the sun. In order to let the light go out, the normals of the sun mesh had to be reversed. I did that by creating a different sun effect which has identical shaders apart from the vertex shader. In that vertex shader, when the transformed normal is calculated, it is timed by -1, so the normals are reversed and the light can shine throughout the scene.
+	
+	\figuremacro{H}{Spotlight_Shadow}{Spot Light Example}{ - This is the spotlight that is bound to the shadow map}{1.0}
+	
+	\paragraph{Spot Lights} Aside from the point lights, we have sever
+	
+
+
+
+\subsection{Shadow Mapping}
+
+	\figuremacro{H}{Shadow_Explanation}{Shadow Mapping}{ }{1.0}
+	
+	In order to implement shadows in this project, we used the shadow mapping technique (See figure \textbf{\ref{fig:Shadow_Explanation}}). Shadow Mapping utilises the depth buffer in order to determine whether an object is in shadow or not. The concept of shadow mapping is that the scene is rendered from the point of view of the light source, then the depth information is gathered, and thereupon that information is used to determine if the object is in shadow. In this scene, I am creating a spot light below the sun facing towards the plane, with a 90 degree point of view, and I am binding the shadow map to that specific light. Therefore, the shadow of the cube is created(See figure \textbf{\ref{fig:Cube_Shadow}}).
+	
+	
+	\figuremacro{H}{Cube_Shadow}{Shadow of the rotating cube}{ }{1.0}
+
+
+
+
 \bibliographystyle{ieeetr}
 \bibliography{references}
 		
