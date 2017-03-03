@@ -108,18 +108,6 @@
 	This line is only one line break down from the above, Notice that latex can ignore this
     
     We can force a break \\ with the break operator.
-    
-	\subsection{Maths}
-    Embedding Maths is Latex's bread and butter    
-    
-    {\centering \Large \(
-        J = \begin{bmatrix}
-            \frac{\delta e}{\delta \theta _0}
-            \frac{\delta e}{\delta \theta _1}
-            \frac{\delta e}{\delta \theta _2}
-        \end{bmatrix}
-        = e_{current} - e_{target} 
-    \)\par}
 	
 	\subsection{Code Listing}
     You can load segments of code from a file, or embed them directly.
@@ -135,27 +123,6 @@ int main() {
 \end{lstlisting}
 
 \lstinputlisting[caption = Hello World! in python script]{./sourceCode/hello.py}
-    
-\subsection{PseudoCode}
-
-\begin{algorithm}[h]
-\For{$i = 0$ \KwTo $100$}{
- print\_number = true\;
-\If{i is divisible by 3}{
- print "Fizz"\;
- print\_number = false\;
-}
-\If{i is divisible by 5}{
- print "Buzz"\;
- print\_number = false\;
-}
-\If{print\_number}{
-    print i\;
-}
-print a newline\;
-}
-\caption{FizzBuzz}
-\end{algorithm}
 
 	\fi
 	
@@ -168,6 +135,7 @@ print a newline\;
 	\begin{itemize}
 		\item Texturing
 		\item Normal Mapping
+		\item Lighting
 		\item Shadow Mapping
 		\item Transform Hierarchy
 		\item Skybox
@@ -237,8 +205,42 @@ print a newline\;
 	
 	
 	\figuremacro{H}{Cube_Shadow}{Shadow of the rotating cube}{ }{1.0}
+	
 
+\subsection{Transform Hierarchy}
 
+	\figuremacro{H}{Invader}{Space Invader}{ - Transform Hierarchy Implementation}{1.0}
+	
+	In the scene, transformation hierarchy is applied in one of the objects(See figure \textbf{\ref{fig:Invader}}). During the transformation hierarchy render, the projection matrix(P) and the view matrix(V) are calculated only whenever the camera moves. The model Matrix only changes when a model is moved, rotated, or transformed. When we calculate the model matrix in this case, we set it to be the space invader transform matrix, and then we set it to be the sun transformation matrix(which is rotating around its own y axis) times itself. This makes the space invader object inherit the sun's rotation. The object is located in the middle of the sun.
+	
+\subsection{Skybox}
+
+	A skybox is implimented in the scene. That gives of the illusion of the stars located around the solar system. In order to to that, a simple cube is rendered, with the inside faces rendered and a star cube map texture applied to it. Furthermore, the depth buffer is temporarily disabled during the skybox render, ensuring that the skybox appears off in the distance. This is achieved by making the position of the skybox equal to the position of the active camera, which means that the camera can never leave the skybox.
+	
+\subsection{Multiple Cameras}	
+	
+		\figuremacro{H}{Project_Falcon}{Millenium Falcon Chase Camera}{ }{1.0}
+	
+	There are two cameras in this project: a chase camera and a free camera. The free camera allows free movement around the scene, while the chase camera chases around a specific object as it moves, which in our case is the millenium falcon(See figure \textbf{\ref{fig:Project_Falcon}}). This is done by having a global boolean which is set to either true or false every time we want to change the active camera. When we are rendering the objects, we calculate the view matrix using the camera that is currently active. 
+	
+\subsection{Rotating Planets}	
+
+	The planets rotate around the sun by setting the position of each planet during the update method using cosine for the x axis and sine for the z axis and adding the position of the sun.
+	\begin{lstlisting}
+	meshes["mercury"].get_transform().position = (vec3(cos(velocity*3.0f)*35.0f, 0.0f, sin(velocity*3.0f)*35.0f) + meshes["sun"].get_transform().position); 
+	\end{lstlisting}
+	 Velocity is a float. Each time the project goes through the update method, delta time is subtracted from velocity times the equation for an elliptical orbit. The equation applied in this case is not exactly correct, but it results in an approximation of an elliptical orbit for the planets. The x and z of the position is in then multiplied by a number, which is the radius we wish to give to each planet.
+	 
+\section{Further Work}	 
+	
+	One of the features I would like to apply in the future is the shadows of all the planets in the plane using a spotlight above the sun. Due to errors, this was not implemented in the scene. Moreover, I would like to apply the correct equation to the velocity of the planets, but I could not completely understand the equation because it required further research, and due to time constraints it was not applied.
+	
+	
+\section{Conclusion}	
+
+	In conclusion, rendering a 3-Dimensional scene using OpenGL and C++ requires a lot of reading around, experimenting, and practising with different visual elements to see what's best. The combination of the variety of techniques being used in this project create an interesting, visually pleasing and gripping result.
+	
+	
 
 
 \bibliographystyle{ieeetr}
