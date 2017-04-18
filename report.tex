@@ -84,14 +84,15 @@
 	\figuremacro{h}{MillenniumFalcon}{Millenium Falcon}{ - Chase Camera Inspiration}{1.0}
 	\end{abstract}
     
-	\textbf{Keywords -- }{Shadowing, Lighting, Multi-Texturing, Skybox, Multiple Cameras, Material Shading}
+	\textbf{Keywords -- }{Shadowing, Lighting, Multi-Texturing, Skybox, Multiple Cameras, Material Shading, Bloom, Particles}
     %START FROM HERE
 	\section{Introduction}
-    \paragraph{Referencing}
 
     The key effects being used are lighting, texturing, shadowing, skybox, material shading and transformation hierarchy. Various rendering techniques are required to produce a realistic depiction of the scene. The different lights being used in the scene are a spot light and a point light in the middle of the sun. Transformation techniques are also being applied to the different meshes of the scene, and each of the objects render have their own textures.Furthermore, in order to create the stars image around the solar system a skybox effect is being used. In order to make the earth more realistic, normal mapping is being implemented on the project.
     
-    Diffuse light is being applied to the scene, adding some depth perception to the objects, as well as specular light which adds shininess of materials to objects and changes depending on the camera position. The transformation and translating of the meshes in the scene is the scaling and the positioning of the objects. Texturing combined with the lighting is applied to give the objects a more realistic aesthetic.  A more advanced technique being used is normal mapping, which uses the texture and a normal mapped version of the texture, which helps determines the direction the pixels are facing, giving an extra feeling of depth to the object. Finally, some advanced post-rendering techniques have been added, like motion blur, bloom and lens flare.
+    Diffuse light is being applied to the scene, adding some depth perception to the objects, as well as specular light which adds shininess of materials to objects and changes depending on the camera position. The transformation and translating of the meshes in the scene is the scaling and the positioning of the objects. Texturing combined with the lighting is applied to give the objects a more realistic aesthetic.  A more advanced technique being used is normal mapping, which uses the texture and a normal mapped version of the texture, which helps determines the direction the pixels are facing, giving an extra feeling of depth to the object.
+    
+     A particle simulation and an exploding factor have also been added in the scene to create a realistic explosion. Finally, some advanced post-rendering techniques have been added. These are motion blur, bloom and lens flare.
     
     
 	
@@ -246,24 +247,21 @@ int main() {
 	In order to give the viewer visual cues for the brightness and intensity of a light, bloom was applied in the scene. Bloom is an effect that heightens the perception of bright objects. There are a variety of ways that bloom may be implemented. In this particular scene, it was applied by rendering two distinct frame buffers. During the first render pass, the scene and the entirety of its objects are rendered normally to a buffer. After that, the buffer's frame was sampled as a texture, and using the relative luminance equation \(L = 0.2126R + 0.7152G+0.0722B\), the perceived brightness for each fragment was evaluated. In this equation, L is the relative luminance, which is the scalar product of the sampled colours and the luminance values. After this is calculated, if it's above a certain number that we define(basically if it's bright enough), which in our case is 0.7, the outgoing colour is set. If it's not bright enough, the colour is set to black. After that, the frame buffer goes through the Gaussian Blur effect, in order to blur all the lights in the frame buffer with just the bright parts of the scene. The final render pass takes the output from the Gaussian blur and the output from the original render pass and sums up the sampled colours.
 	
 	
+\subsection{Lens Flare Effect}
+
+	\figuremacro{H}{NormalLens}{Normal Lens Effect}{ }{1.0}
+
+	To create a nicer visual effect when looking at bright parts of the screen, lens flare was implemented(See figure \textbf{\ref{fig:NormalLens}}). In order to implement this post processing effect, we firstly want to select a subset of the brightest pixels in the source image(just like with bloom). Moreover, the lens flare pivots around the image centre. This is achieved by flipping the texture coordinates. Furthermore, ghosts were required for this effect. Ghosts are the repetitious blobs which mirror the bright spots. In order for the ghosts to be generated, a vector is acquired from the current pixel to the centre of the screen, and after that several samples are taken along this vector. We improve the final result by adding a weight function, which is a linear falloff. This is done in order to make bright spots at the centre able to  cast ghosts at the edges, but not the other way around.
 	
+	\figuremacro{H}{WeightlessLens}{Lens Effect without the Weight Function}{ }{1.0}
+	
+	As the Lens Flare effect was being implemented, the result without the weight function was visually intriguing(See figure \textbf{\ref{fig:WeightlessLens}}), so it was decided that the user should be able to choose whether he wants weight applied to the effect or not. This is done by passing a boolean as an integer to the lens flare shader. Finally, the user has the option to change the number of ghosts applied in the effect(See figures \textbf{\ref{fig:LensShapes1}} and \textbf{\ref{fig:LensShapes2}}). This is also achieved simply by passing the number of ghosts as an integer to the lens flare shader.
+	
+	\figuremacro{H}{LensShapes1}{Lens effect with 10 ghosts }{(Lens Effect is shown without the Weight Function) }{1.0}
+	\figuremacro{H}{LensShapes2}{Lens effect with 35 ghosts }{(Lens Effect is shown without the Weight Function)}{1.0}
 
-\iffalse
-dyr
 
-\begin{figure}[!tbp]
-	\centering
-	\begin{minipage}[b]{0.4\textwidth}
-		\includegraphics[width=\textwidth]{LensShapes1}
-		\caption{Adding 10 ghosts}
-	\end{minipage}
-	\hfill
-	\begin{minipage}[b]{0.4\textwidth}
-		\includegraphics[width=\textwidth]{LensShapes2}
-		\caption{Adding 30 ghosts}
-	\end{minipage}
-\end{figure}
-	\fi
+	
 \subsection{Multiple Cameras}	
 	
 		\figuremacro{H}{Project_Falcon}{Millenium Falcon Chase Camera}{ }{1.0}
@@ -278,9 +276,18 @@ dyr
 	\end{lstlisting}
 	 Velocity is a float. Each time the project goes through the update method, delta time is subtracted from velocity times the equation for an elliptical orbit. The equation applied in this case is not exactly correct, but it results in an approximation of an elliptical orbit for the planets. The x and z of the position is in then multiplied by a number, which is the radius we wish to give to each planet.
 	 
+\section{Optimisation}
+
+	\figuremacro{H}{Optimisation}{Performance Profiler Report}{ }{1.0}
+	
+	Even though the scene was running at 60fps, there are several optimisations that were made. First of all, OpenGL calls and bindings were reduced to a great extent by removing them from the for loops in the render functions where it was possible. In addition, buckets were used in order to render objects with the same shaders and uniforms. Furthermore, on multiple cases, when calculating the MVP matrix, the PV is calculated first, resulting in a faster CPU response. Finally, the shaders have been optimised by avoiding memory lookups and the use of the if function when possible.
+	The result of these optimisations was for the render function to use approximately 25\% less total CPU, dropping from 79.5\% to 54.13\% (See figure \textbf{\ref{fig:Optimisation}}). The performance of this project was analysed using the Visual Studio Performance Profiler.
+	
+	
+	 
 \section{Further Work}	 
 	
-	One of the features I would like to apply in the future is the shadows of all the planets in the plane using a spotlight above the sun. Due to errors, this was not implemented in the scene. Moreover, I would like to apply the correct equation to the velocity of the planets, but I could not completely understand the equation because it required further research, and due to time constraints it was not applied. Finally
+	One of the features I would like to apply in the future is a laser beam firing from the millenium falcon to the death star before it explodes. Due to time constraints, this was not implemented in the scene. Moreover, I would like to apply the correct equation to the velocity of the planets, but I could not completely understand the equation because it required further research, and due to time constraints it was not applied. 
 	
 	
 \section{Conclusion}	
